@@ -1,0 +1,38 @@
+FORM INFORMATION 
+-registration number
+-class (all-terrain, mountain, tandem, etc)
+-make 
+-model 
+-frame size 
+-frame number 
+-date of purchase 
+-purchase price 
+-selling date 
+-selling price 
+-day or half day 
+-late rentals 
+FUNCTIONS 
+-record general details 
+    -customer name 
+    -telephone number 
+    -date 
+    -time out 
+    -expected time back 
+    -expected period 
+    -deposite type (cash,credit)
+    -total prepaid amount 
+-max of 4 rentals 
+    -class 
+    -registration number
+    -model 
+    -prepaid amount
+    -pay 20 down payment 
+-find rental agreement on return 
+    update time of return 
+    -update charges 
+    -return deposite
+Abandoned return 
+    -update the form 
+    -written off after 10 days 
+    -charged 20 per
+Function to get stats from database to display 

@@ -1,0 +1,49 @@
+import tkinter as tk
+from tkinter import ttk
+from database import list_available_bikes
+
+
+class BicycleListForm(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Available Bicycles")
+        self.geometry("750x400")
+
+        ttk.Label(self, text="Available Bicycles", font=("Arial", 14, "bold")).pack(pady=10)
+
+        table_frame = ttk.Frame(self)
+        table_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        columns = ("registration_number", "bicycle_class", "make", "model","status")
+
+        self.tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+        self.tree.heading("registration_number", text="Registration #")
+        self.tree.heading("bicycle_class", text="Class")
+        self.tree.heading("make", text="Make")
+        self.tree.heading("model", text="Model")
+        self.tree.heading("status", text="Status")
+
+        self.tree.column("status", width=140, anchor="center")
+        self.tree.column("registration_number", width=140, anchor="center")
+        self.tree.column("bicycle_class", width=120, anchor="center")
+        self.tree.column("make", width=140, anchor="center")
+        self.tree.column("model", width=140, anchor="center")
+
+        scrollbar_y = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar_y.set)
+
+        self.tree.pack(side="left", fill="both", expand=True)
+        scrollbar_y.pack(side="right", fill="y")
+
+        self.load_bicycles()
+
+        ttk.Button(self, text="Close", command=self.destroy).pack(pady=10)
+
+    def load_bicycles(self):
+        rows = list_available_bikes()
+
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        for bike in rows:
+            self.tree.insert("", "end", values=bike)
