@@ -56,13 +56,17 @@ def initialize_database():
                     rental_status TEXT NOT NULL DEFAULT 'Open',
                     incident_notes TEXT
                 );
-
-                CREATE TABLE IF NOT EXISTS rental_rates (
+                CREATE TABLE IF NOT EXISTS rental_items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    bicycle_class TEXT NOT NULL,
-                    period TEXT NOT NULL,
-                    rate REAL NOT NULL
+                    prepaid_amount REAL,
+                    rental_id INTEGER NOT NULL,
+                    bicycle_id INTEGER NOT NULL,
+                    FOREIGN KEY (rental_id) REFERENCES rentals(rental_id),
+                    FOREIGN KEY (bicycle_id) REFERENCES bicycles(id)
+
                 );
+
+              
                 """
     ) 
     connection.commit()
@@ -124,10 +128,21 @@ def list_available_bikes():
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("""
-            SELECT registration_number, bike_class, make, model, status
+            SELECT id, registration_number, bike_class, make, model, status
             FROM bicycles
             WHERE status = 'Available'
             ORDER BY bike_class, registration_number
+            """)
+    rows = cursor.fetchall() 
+    connection.close()
+    return rows
+
+def list_all_bikes():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+            SELECT id, registration_number, bike_class, make, model, status
+            FROM bicycles
             """)
     rows = cursor.fetchall() 
     connection.close()
@@ -153,7 +168,24 @@ def add_rental(data):
     INSERT INTO rentals (
         customer_name, telephone, date_created, time_out, expected_time_back, expected_period,
         deposit_type, total_prepaid_amount, total_deposit_amount
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)
     """, data)
+    rental_id=cursor.lastrowid
     conn.commit()
     conn.close()
+    return rental_id 
+
+def add_rental_item(rental_id,bicycle_id): 
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT INTO rental_items (prepaid_amount,rental_id, bicycle_id)
+    VALUES (?,?,?) 
+    """,(rental_id,bicycle_id))
+    cursor.execute("UPDATE bicycles SET status ='Rented' WHERE id=?",(bicycle_id,))
+    conn.commit()
+    conn.close()
+    
+
+    
+    

@@ -4,12 +4,15 @@ from database import list_available_bikes
 from tkinter import messagebox
 from database import get_rate
 from database import add_rental
-
+from database import add_rental_item
+from gui.reciept import ReceiptForm
 class RentalForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent=parent
         self.title("Create Rental")
         self.geometry("650x500")
+        
 
         ttk.Label(self, text="Customer Name").grid(row=0, column=0, padx=10, pady=5, sticky="w")
         self.name_entry = ttk.Entry(self)
@@ -45,7 +48,7 @@ class RentalForm(tk.Toplevel):
 
         self.available_bicycles = list_available_bikes()
         for bike in self.available_bicycles:
-            self.bicycle_listbox.insert(tk.END, f"{bike[0]} | {bike[1]} | {bike[2]} | {bike[3]} [{bike[4]}]")
+            self.bicycle_listbox.insert(tk.END, f"{bike[1]} | {bike[2]} | {bike[3]} | {bike[4]} [{bike[5]}]")
         ttk.Button(self, text="Create Rental", command=self.create_rental).grid(row=8, column=0, columnspan=2, pady=20)
     #
     def create_rental(self):
@@ -65,30 +68,33 @@ class RentalForm(tk.Toplevel):
             "Missing Fields",
             "Please fill in:\n\n• " + "\n• ".join(empty)
             )
-        if not selected_indices:
+        elif not selected_indices:
             messagebox.showerror(
                 "Missing Fields",
                 "Please select at least one rental bike.")
-        if len(selected_indices) > 4:
+        elif len(selected_indices) > 4:
              messagebox.showerror(
                 "Missing Fields",
                 "Please make sure only 4 were selected.")
-        selected_bicycles = [self.available_bicycles[i] for i in selected_indices]
-        total=self.calculate_price(selected_bicycles,period) 
-        total_deposit=len(selected_indices) * 20
-        rental_data=(name,phone,date,out,time_back,period,deposit,total,total_deposit)
-        add_rental(rental_data)
-
-
-
-
+             
+        else: 
+            selected_bicycles = [self.available_bicycles[i] for i in selected_indices]
+            total=self.calculate_price(selected_bicycles,period) 
+            total_deposit=len(selected_indices) * 20
+            rental_data=(name,phone,date,out,time_back,period,deposit,0,total_deposit)
+            rental_id=add_rental(rental_data)
+            self.destroy()
+            self.parent.deiconify()
+            
+            ReceiptForm(rental_data,rental_id,selected_bicycles)
     def calculate_price(self,bicycles,period):
         total=0
         
         for bike in bicycles:
-            bikeclass=bike[1] 
+            bikeclass=bike[2] 
             rate = get_rate(bikeclass,period)
             total= rate + total
     
         
         return total
+

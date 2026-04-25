@@ -11,12 +11,15 @@ class BicycleRentalApp(tk.Tk):
 
         ttk.Label(self, text="Jonathan's Bicycle Store", font=("Arial", 16, "bold")).pack(pady=20)
 
-        ttk.Button(self, text="List Available Bicycles",command=self.get_available_bikes).pack(pady=10)
+        ttk.Button(self, text="List All Bicycles",command=self.get_available_bikes).pack(pady=10)
         ttk.Button(self, text="Create Rental",command = self.create_rental_form).pack(pady=10)
         ttk.Button(self, text="Exit", command=self.destroy).pack(pady=20)
 
     def get_available_bikes(self):
+        self.withdraw()
         BicycleListForm(self)
     
     def create_rental_form(self):
+        self.withdraw()
         RentalForm(self)
+     

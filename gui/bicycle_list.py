@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-from database import list_available_bikes
+from database import list_all_bikes
+
 
 
 class BicycleListForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent=parent
         self.title("Available Bicycles")
         self.geometry("750x400")
 
@@ -14,9 +16,10 @@ class BicycleListForm(tk.Toplevel):
         table_frame = ttk.Frame(self)
         table_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        columns = ("registration_number", "bicycle_class", "make", "model","status")
+        columns = ("id","registration_number", "bicycle_class", "make", "model","status")
 
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+        self.tree.heading("id", text="Bike Id")
         self.tree.heading("registration_number", text="Registration #")
         self.tree.heading("bicycle_class", text="Class")
         self.tree.heading("make", text="Make")
@@ -24,6 +27,7 @@ class BicycleListForm(tk.Toplevel):
         self.tree.heading("status", text="Status")
 
         self.tree.column("status", width=140, anchor="center")
+        self.tree.column("id", width=60, anchor="center")
         self.tree.column("registration_number", width=140, anchor="center")
         self.tree.column("bicycle_class", width=120, anchor="center")
         self.tree.column("make", width=140, anchor="center")
@@ -37,10 +41,15 @@ class BicycleListForm(tk.Toplevel):
 
         self.load_bicycles()
 
-        ttk.Button(self, text="Close", command=self.destroy).pack(pady=10)
+        ttk.Button(self, text="Back", command=self.open_main_window).pack(pady=10)
+    
+    def open_main_window(self):
+        self.destroy()
+        self.parent.deiconify()
+        
 
     def load_bicycles(self):
-        rows = list_available_bikes()
+        rows = list_all_bikes()
 
         for row in self.tree.get_children():
             self.tree.delete(row)
