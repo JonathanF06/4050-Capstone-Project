@@ -6,6 +6,8 @@ from database import get_rate
 from database import add_rental
 from database import add_rental_item
 from gui.reciept import ReceiptForm
+from tkcalendar import DateEntry
+
 class RentalForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -22,16 +24,45 @@ class RentalForm(tk.Toplevel):
         self.phone_entry = ttk.Entry(self)
         self.phone_entry.grid(row=1, column=1, padx=10, pady=5)
 
+        def format_phone(event):
+            text = self.phone_entry.get()
+            digits = "".join(filter(str.isdigit, text))
+            
+            digits = digits[:10]
+
+            formatted = ""
+
+            if len(digits) >= 1:
+                formatted = "(" + digits[:3]
+            if len(digits) >= 4:
+                formatted += ") " + digits[3:6]
+            if len(digits) >= 7:
+                formatted += "-" + digits[6:10]
+
+            # avoid cursor jumping issue
+            self.phone_entry.delete(0, tk.END)
+            self.phone_entry.insert(0, formatted)
+
+        self.phone_entry.bind("<KeyRelease>", format_phone)
+
         ttk.Label(self, text="Rental Date").grid(row=2, column=0, padx=10, pady=5, sticky="w")
-        self.date_entry = ttk.Entry(self)
+        self.date_entry = DateEntry(
+            self,
+            width=18,
+            date_pattern="mm/dd/yyyy"
+        )
         self.date_entry.grid(row=2, column=1, padx=10, pady=5)
 
+
+        time_values=["8:00AM","8:30AM","9:00AM","9:30AM","10:00AM","10:30AM","11:00AM","11:30AM","12:00PM","12:30PM","1:00PM","1:30PM",
+                "2:00PM","2:30PM","3:00PM","3:30PM","4:00PM","4:30PM","5:00PM"]
+
         ttk.Label(self, text="Time Out").grid(row=3, column=0, padx=10, pady=5, sticky="w")
-        self.time_out_entry = ttk.Entry(self)
+        self.time_out_entry = ttk.Combobox(self, values=time_values, state="readonly")
         self.time_out_entry.grid(row=3, column=1, padx=10, pady=5)
 
         ttk.Label(self, text="Expected Time Back").grid(row=4, column=0, padx=10, pady=5, sticky="w")
-        self.expected_back_entry = ttk.Entry(self)
+        self.expected_back_entry = ttk.Combobox(self, values=time_values, state="readonly")
         self.expected_back_entry.grid(row=4, column=1, padx=10, pady=5)
 
         ttk.Label(self, text="Rental Period").grid(row=5, column=0, padx=10, pady=5, sticky="w")

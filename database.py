@@ -175,13 +175,13 @@ def add_rental(data):
     conn.close()
     return rental_id 
 
-def add_rental_item(rental_id,bicycle_id): 
+def add_rental_item(prepaid,rental_id,bicycle_id): 
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO rental_items (prepaid_amount,rental_id, bicycle_id)
     VALUES (?,?,?) 
-    """,(rental_id,bicycle_id))
+    """,(prepaid,rental_id,bicycle_id))
     cursor.execute("UPDATE bicycles SET status ='Rented' WHERE id=?",(bicycle_id,))
     conn.commit()
     conn.close()
