@@ -5,6 +5,8 @@ def setup_styles(window):
     window.configure(bg="#f0f0f0")
     style.theme_use("clam")
 
+    style.configure("TFrame", background="#f0f0f0")
+
     #Title Labels
     style.configure(
         "TLabel",
@@ -75,3 +77,13 @@ def setup_styles(window):
         foreground=[("selected", "white")]
     )
 
+    style.configure(
+        "TEntry",
+        padding=6,
+        font=("Arial", 20),
+        relief="flat",
+        borderwidth=1,
+        foreground="#333333",
+        fieldbackground="#ffffff",
+        insertcolor="#333333",  # cursor color
+    )

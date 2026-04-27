@@ -187,5 +187,13 @@ def add_rental_item(prepaid,rental_id,bicycle_id):
     conn.close()
     
 
-    
-    
+def list_all_rentals():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT rental_id, customer_name, telephone, date_created, rental_status
+    FROM rentals
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
