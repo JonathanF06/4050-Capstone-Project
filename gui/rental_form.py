@@ -16,16 +16,15 @@ class RentalForm(tk.Toplevel):
 
         self.parent=parent
         self.title("Create Rental")
-        self.geometry("850x600")
-        
+        self.geometry("620x550")
 
-        ttk.Label(self, text="Customer Name").grid(row=0, column=0, padx=50, sticky="w")
-        self.name_entry = ttk.Entry(self)
-        self.name_entry.grid(row=1, column=0, padx=50, sticky="w")
+        ttk.Label(self, text="Customer Name", style="Form.TLabel").grid(row=0, column=0, padx=50, sticky="w")
+        self.name_entry = ttk.Entry(self, font=("Arial", 12))
+        self.name_entry.grid(row=1, column=0, padx=50, pady=(0, 10), sticky="w")
 
-        ttk.Label(self, text="Phone").grid(row=0, column=1, padx=50, sticky="w")
-        self.phone_entry = ttk.Entry(self)
-        self.phone_entry.grid(row=1, column=1, padx=50, sticky="w")
+        ttk.Label(self, text="Phone", style="Form.TLabel").grid(row=0, column=1, padx=50, sticky="w")
+        self.phone_entry = ttk.Entry(self, font=("Arial", 12))
+        self.phone_entry.grid(row=1, column=1, padx=50, pady=(0, 10), sticky="w")
 
         def format_phone(event):
             text = self.phone_entry.get()
@@ -48,37 +47,38 @@ class RentalForm(tk.Toplevel):
 
         self.phone_entry.bind("<KeyRelease>", format_phone)
 
-        ttk.Label(self, text="Rental Date").grid(row=2, column=0, padx=50, sticky="w")
+        ttk.Label(self, text="Rental Date", style="Form.TLabel").grid(row=2, column=0, padx=50, sticky="w")
         self.date_entry = DateEntry(
             self,
             width=18,
+            font=("Arial", 12),
             date_pattern="mm/dd/yyyy"
         )
-        self.date_entry.grid(row=3, column=0, padx=50, sticky="w")
+        self.date_entry.grid(row=3, column=0, padx=50, pady=(0, 10), sticky="w")
 
 
         time_values=["8:00AM","8:30AM","9:00AM","9:30AM","10:00AM","10:30AM","11:00AM","11:30AM","12:00PM","12:30PM","1:00PM","1:30PM",
                 "2:00PM","2:30PM","3:00PM","3:30PM","4:00PM","4:30PM","5:00PM"]
 
-        ttk.Label(self, text="Time Out").grid(row=2, column=1, padx=50, sticky="w")
-        self.time_out_entry = ttk.Combobox(self, values=time_values, state="readonly")
-        self.time_out_entry.grid(row=3, column=1, padx=50, sticky="w")
+        ttk.Label(self, text="Time Out", style="Form.TLabel").grid(row=2, column=1, padx=50, sticky="w")
+        self.time_out_entry = ttk.Combobox(self, values=time_values, state="readonly", font=("Arial", 12))
+        self.time_out_entry.grid(row=3, column=1, padx=50, pady=(0, 10), sticky="w")
 
-        ttk.Label(self, text="Expected Time Back").grid(row=4, column=0, padx=50, sticky="w")
-        self.expected_back_entry = ttk.Combobox(self, values=time_values, state="readonly")
-        self.expected_back_entry.grid(row=5, column=0, padx=50, sticky="w")
+        ttk.Label(self, text="Expected Time Back", style="Form.TLabel").grid(row=4, column=0, padx=50, sticky="w")
+        self.expected_back_entry = ttk.Combobox(self, values=time_values, state="readonly", font=("Arial", 12))
+        self.expected_back_entry.grid(row=5, column=0, padx=50, pady=(0, 10), sticky="w")
 
-        ttk.Label(self, text="Rental Period").grid(row=4, column=1, padx=50, sticky="w")
-        self.period_combo = ttk.Combobox(self, values=["Day", "Half-Day", "Late Rental"], state="readonly")
-        self.period_combo.grid(row=5, column=1, padx=50, sticky="w")
+        ttk.Label(self, text="Rental Period", style="Form.TLabel").grid(row=4, column=1, padx=50, sticky="w")
+        self.period_combo = ttk.Combobox(self, values=["Day", "Half-Day", "Late Rental"], state="readonly", font=("Arial", 12))
+        self.period_combo.grid(row=5, column=1, padx=50, pady=(0, 10), sticky="w")
 
-        ttk.Label(self, text="Deposit Type").grid(row=6, column=0, padx=50, sticky="w")
-        self.deposit_combo = ttk.Combobox(self, values=["Cash", "Credit Card"], state="readonly")
-        self.deposit_combo.grid(row=7, column=0, padx=50, sticky="w")
+        ttk.Label(self, text="Deposit Type", style="Form.TLabel").grid(row=6, column=0, padx=50, sticky="w")
+        self.deposit_combo = ttk.Combobox(self, values=["Cash", "Credit Card"], state="readonly", font=("Arial", 12))
+        self.deposit_combo.grid(row=7, column=0, padx=50, pady=(0, 10), sticky="w")
 
         #ttk.Label(self, text="Available Bicycles (max 4)").grid(row=8, column=0, padx=50, sticky="w")
-        self.bicycle_listbox = tk.Listbox(self, selectmode=tk.MULTIPLE, width=50, height=10)
-        self.bicycle_listbox.grid(row=8, column=0, columnspan=2, padx=10)
+        self.bicycle_listbox = tk.Listbox(self, selectmode=tk.MULTIPLE, width=50, height=10, font=("Arial", 12))
+        self.bicycle_listbox.grid(row=8, column=0, columnspan=2, pady=20)
 
         self.available_bicycles = list_available_bikes()
         for bike in self.available_bicycles:

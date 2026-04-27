@@ -14,6 +14,12 @@ def setup_styles(window):
         background="#f0f0f0"
     )
 
+    style.configure(
+        "Form.TLabel",
+        font=("Arial", 12, "bold"),
+        background="#f0f0f0"
+    )
+
     #Regular Buttons
     style.configure(
         "TButton",
@@ -80,7 +86,6 @@ def setup_styles(window):
     style.configure(
         "TEntry",
         padding=6,
-        font=("Arial", 20),
         relief="flat",
         borderwidth=1,
         foreground="#333333",
