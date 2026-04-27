@@ -7,13 +7,16 @@ from database import add_rental
 from database import add_rental_item
 from gui.reciept import ReceiptForm
 from tkcalendar import DateEntry
+from styles import setup_styles
 
 class RentalForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        setup_styles(self)
+
         self.parent=parent
         self.title("Create Rental")
-        self.geometry("650x500")
+        self.geometry("850x600")
         
 
         ttk.Label(self, text="Customer Name").grid(row=0, column=0, padx=10, pady=5, sticky="w")

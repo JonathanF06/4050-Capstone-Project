@@ -115,6 +115,7 @@ class ReceiptForm(tk.Toplevel):
     def save_print(self):
         
         prepaid_amount=[]
+        failedCheck = False
         
         for i, entry in enumerate(self.prepaid_entries):
             if entry.get() != '':
@@ -123,13 +124,15 @@ class ReceiptForm(tk.Toplevel):
                         "Error",
                         "Please make sure prepaid prices are correct."
                     )
+                    failedCheck = True
                 else:
                     prepaid_amount.append(entry.get())
-         
-        if len(prepaid_amount) != len(self.selected):
-            messagebox.showerror(
-                "Missing Fields",
-                "Please fill out a Prepaid amount.") 
+        
+        if not failedCheck:
+            if len(prepaid_amount) != len(self.selected):
+                messagebox.showerror(
+                    "Missing Fields",
+                    "Please fill out a Prepaid amount.") 
         
         for i, bike in enumerate(self.selected):
             bike_id=bike[0]
