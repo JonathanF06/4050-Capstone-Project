@@ -3,7 +3,7 @@ from tkinter import ttk
 from styles import setup_styles
 from gui.bicycle_list import BicycleListForm
 from gui.rental_form import RentalForm
-
+from gui.rental_list import RentalList
 class BicycleRentalApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -16,7 +16,6 @@ class BicycleRentalApp(tk.Tk):
         ttk.Button(self, text="List Bicycles", width=50, command = self.get_available_bikes).pack(pady=10)
         ttk.Button(self, text="Create Rental", width=50, command = self.create_rental_form).pack(pady=10)
         ttk.Button(self, text="View Rentals", width=50, command = self.view_rentals).pack(pady=10)
-        ttk.Button(self, text="Return Rental", width=50, command = self.return_rental).pack(pady=10)
         ttk.Button(self, text="Exit", style="Exit.TButton", width=50, command=self.destroy).pack(pady=10)
 
     def get_available_bikes(self):
@@ -28,7 +27,6 @@ class BicycleRentalApp(tk.Tk):
         RentalForm(self)
     
     def view_rentals(self):
-        return
-    
-    def return_rental(self):
-        return
+        self.withdraw()
+        RentalList(self)
+

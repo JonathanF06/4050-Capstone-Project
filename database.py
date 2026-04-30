@@ -50,12 +50,12 @@ def initialize_database():
                     total_prepaid_amount REAL NOT NULL,
                     total_deposit_amount REAL NOT NULL,
                     time_returned TEXT,
-                    actual_charge REAL,
+                    actual_total REAL,
                     extra_charge REAL,
                     deposit_released INTEGER DEFAULT 0,
                     rental_status TEXT NOT NULL DEFAULT 'Open',
                     incident_notes TEXT
-                );
+                ); 
                 CREATE TABLE IF NOT EXISTS rental_items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     prepaid_amount REAL,
@@ -167,8 +167,8 @@ def add_rental(data):
     cursor.execute("""
     INSERT INTO rentals (
         customer_name, telephone, date_created, time_out, expected_time_back, expected_period,
-        deposit_type, total_prepaid_amount, total_deposit_amount
-    ) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)
+        deposit_type, total_prepaid_amount, total_deposit_amount,actual_total
+    ) VALUES (?,?,?,?,?,?,?,?,?,?)
     """, data)
     rental_id=cursor.lastrowid
     conn.commit()
@@ -195,5 +195,43 @@ def list_all_rentals():
     FROM rentals
     """)
     rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_rental_prepaid(rental_id,bicycle_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT prepaid_amount FROM rental_items
+    WHERE rental_id = ? AND bicycle_id = ?
+    ORDER BY rental_id DESC LIMIT 1
+    """, (rental_id, bicycle_id))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else 0 
+
+def get_rental_total(rental_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT actual_total FROM rentals
+    WHERE rental_id = ?
+    ORDER BY rental_id DESC LIMIT 1
+    """, (rental_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else 0 
+
+def get_rentaldata(id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT customer_name, telephone, date_created,time_out,expected_time_back,expected_period,deposit_type,total_prepaid_amount,total_prepaid_amount,actual_total
+    FROM rentals
+    WHERE rental_id=?
+    ORDER BY rental_id DESC LIMIT 1
+    """, (id,))           
+
+    rows = cursor.fetchone()
     conn.close()
     return rows

@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from database import list_all_rentals
 from styles import setup_styles
-
-
-class BicycleListForm(tk.Toplevel):
+from gui.reciept import ReceiptForm
+from database import get_rentaldata
+class RentalList(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         setup_styles(self)
@@ -18,10 +18,52 @@ class BicycleListForm(tk.Toplevel):
         table_frame = ttk.Frame(self)
         table_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        columns = ()
+        columns = ("rental_id","customer_name","telephone","date_created","rental_status")
 
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+        self.tree.heading("rental_id", text="Rental ID")
+        self.tree.heading("customer_name", text="Customer Name")
+        self.tree.heading("telephone", text="Phone Number")
+        self.tree.heading("date_created", text="Date Rented")
+        self.tree.heading("rental_status", text="Status")
 
-        self.load_bicycles()
+        self.tree.column("rental_id", width=100, anchor="center")
+        self.tree.column("customer_name", width=100, anchor="center")
+        self.tree.column("telephone", width=140, anchor="center")
+        self.tree.column("date_created", width=120, anchor="center")
+        self.tree.column("rental_status", width=140, anchor="center")
+        
+        scrollbar_y = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar_y.set)
 
+        self.tree.pack(side="left", fill="both", expand=True)
+        scrollbar_y.pack(side="right", fill="y")
+
+    
+        self.load_rentals()
+        ttk.Button(self, text="View", width=50, command = self.get_copy).pack(pady=10)
         ttk.Button(self, text="Back", command=self.open_main_window).pack(pady=10)
+        
+
+    def open_main_window(self):
+        self.destroy()
+        self.parent.deiconify()
+        
+
+    def load_rentals(self):
+        rows = list_all_rentals()
+
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        for bike in rows:
+            self.tree.insert("", "end", values=bike)
+    def get_copy(self):
+        selected=self.tree.selection()
+        if selected:   
+            row = self.tree.item(selected[0])
+            values= row["values"]
+            print(values)
+            ReceiptForm(get_rentaldata(values[0]),self.rentals_id,self.selected,True)
+
+

@@ -123,12 +123,12 @@ class RentalForm(tk.Toplevel):
             selected_bicycles = [self.available_bicycles[i] for i in selected_indices]
             total=self.calculate_price(selected_bicycles,period) 
             total_deposit=len(selected_indices) * 20
-            rental_data=(name,phone,date,out,time_back,period,deposit,0,total_deposit)
+            rental_data=(name,phone,date,out,time_back,period,deposit,0,total_deposit,total)
             rental_id=add_rental(rental_data)
             self.destroy()
             self.parent.deiconify()
             
-            ReceiptForm(rental_data,rental_id,selected_bicycles)
+            ReceiptForm(rental_data,rental_id,selected_bicycles,False)
 
 
     def calculate_price(self,bicycles,period):

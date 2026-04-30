@@ -4,8 +4,10 @@ from database import get_rate
 from database import add_rental
 from database import add_rental_item
 from tkinter import messagebox
+from database import get_rental_prepaid
+from database import get_rental_total 
 class ReceiptForm(tk.Toplevel):
-    def __init__(self,data,rentals_id,selected):
+    def __init__(self,data,rentals_id,selected,final):
         super().__init__()
         self.data=data
         self.selected=selected
@@ -16,7 +18,7 @@ class ReceiptForm(tk.Toplevel):
         vcmd = (self.register(only_numbers), "%P")
 
         self.title("Receipt")
-        self.geometry("820x500")
+        self.geometry("900x550")
 
         main = tk.Frame(self, padx=10, pady=10)
         main.pack(fill="both", expand=True)
@@ -85,6 +87,7 @@ class ReceiptForm(tk.Toplevel):
         
         bike_data = []
         self.list_prices = []
+        prepaid=[]
 
         for id,reg_number,bike_class,make,model,status in selected:
             price = int(get_rate(bike_class,data[5]))
@@ -92,26 +95,46 @@ class ReceiptForm(tk.Toplevel):
             price_formatted=f"${price}"
 
             bike_data.append([reg_number,bike_class,make,model,price_formatted,"prepay"])
+            if final: 
+                prepaid.append (get_rental_prepaid(rentals_id,id))
         
         self.prepaid_entries = []
         for row, row_data in enumerate(bike_data,start=2):
 
             for column, value in enumerate(row_data):
                 if value == "prepay":
-                    entry = tk.Entry(table_frame,borderwidth=1,relief="solid",validate="key",validatecommand=vcmd)
-                    entry.grid(row=row, column=column,padx=5, pady=5)
+                    if not final:
+                        entry = tk.Entry(table_frame,borderwidth=1,relief="solid",validate="key",validatecommand=vcmd)
+                        entry.grid(row=row, column=column,padx=5, pady=5)
+                
+                        self.prepaid_entries.append(entry)
+                    else :
+                        tk.Label(table_frame,text=prepaid[row-2],borderwidth=1, relief="solid",padx=5,pady=5).grid(row=row,column=column, sticky="nsew")
 
-                    self.prepaid_entries.append(entry)
+
                 else:
                     tk.Label(table_frame,text=value,borderwidth=1, relief="solid",padx=5,pady=5).grid(row=row,column=column, sticky="nsew")
 
-
-        bottom = tk.Frame(main)
-        bottom.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))    
         
-        done_btn = tk.Button(bottom, text="Print", width=12, command=self.save_print)
-        done_btn.pack(anchor="e", padx=10, pady=5) 
-    
+        bottom = tk.Frame(main)
+        bottom.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+       
+        if not final:
+            print_button = tk.Button(bottom, text="Print", width=12, command=self.save_print)
+            print_button.pack(anchor="e", padx=10, pady=5)
+        else: 
+            total_prepaid=sum(prepaid)
+            total_cost= get_rental_total(rentals_id)
+            
+            paid_label=tk.Label(bottom,text=f"Total Paid: ${total_prepaid}")
+            paid_label.pack(anchor="e", padx=10, pady=5) 
+
+            cost_label=tk.Label(bottom,text=f"Total Cost: ${total_cost}")
+            cost_label.pack(anchor="e", padx=10, pady=5)
+            
+            close_button = tk.Button(bottom, text="Close", width=12, command=self.destroy)
+            close_button.pack(anchor="e", padx=10, pady=5) 
+
     def save_print(self):
         prepaid_amount=[]
         hasError = False
@@ -137,5 +160,5 @@ class ReceiptForm(tk.Toplevel):
                 bike_id=bike[0]
                 add_rental_item(prepaid_amount[i],self.rentals_id,bike_id)
                 self.destroy()
-
-        
+                ReceiptForm(self.data,self.rentals_id,self.selected,True)
+     
