@@ -8,7 +8,7 @@ def get_connection():
 
 #creating database tables
 def initialize_database():
-    connection = get_connection()
+    connection = get_connection() 
     cursor = connection.cursor()
     cursor.executescript(
                 """
@@ -35,9 +35,10 @@ def initialize_database():
                     rate REAL NOT NULL,
                     effective_from TEXT NOT NULL,
                     effective_to TEXT,
+                    late_fee REAL,
                     UNIQUE(bike_class, period, effective_from)
-                );
-
+                ); 
+                
                 CREATE TABLE IF NOT EXISTS rentals (
                     rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     customer_name TEXT NOT NULL,
@@ -82,13 +83,11 @@ def seed_sample_data():
         ("AT002", "AT", "Cannondale", "Quick CX", "S", "FRM005", "2024-09-05", 690.0)
     ]
     rates = [
-        ("MB", "Day", 18.0, "2026-01-01", None),
-        ("MB", "Half-Day", 10.0, "2026-01-01", None),
-        ("MB", "Late Rental", 6.0, "2026-01-01", None),
-        ("AT", "Day", 20.0, "2026-01-01", None),
-        ("AT", "Half-Day", 12.0, "2026-01-01", None),
-        ("AT", "Late Rental", 8.0, "2026-01-01", None)
-    ]
+        ("MB", "Day", 18.0, "2026-01-01", None,6),
+        ("MB", "Half-Day", 10.0, "2026-01-01", None,6),
+        ("AT", "Day", 20.0, "2026-01-01", None,8),
+        ("AT", "Half-Day", 12.0, "2026-01-01", None,8)
+        ]
     add_bicycles(bikes)
     add_rates(rates)
 
@@ -98,8 +97,8 @@ def add_rates(data):
     cursor.executemany(
         """
         INSERT OR IGNORE INTO rental_rates (
-            bike_class,period,rate,effective_from,effective_to
-        ) VALUES (?, ?, ?, ?, ?)
+            bike_class,period,rate,effective_from,effective_to,late_fee
+        ) VALUES (?, ?, ?, ?, ?,?)
         """,
         data
     )
@@ -161,6 +160,19 @@ def get_rate(bicycle_class, period):
     conn.close()
     return row[0] if row else 0 
 
+def late_fee(bicycle_class):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT late_fee FROM rental_rates
+    WHERE bike_class = ?
+    ORDER BY id DESC LIMIT 1
+    """, (bicycle_class,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else 0 
+
+
 def add_rental(data):
     conn = get_connection()
     cursor = conn.cursor()
@@ -174,7 +186,6 @@ def add_rental(data):
     conn.commit()
     conn.close()
     return rental_id 
-
 def add_rental_item(prepaid,rental_id,bicycle_id): 
     conn = get_connection()
     cursor = conn.cursor()
@@ -226,12 +237,109 @@ def get_rentaldata(id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT customer_name, telephone, date_created,time_out,expected_time_back,expected_period,deposit_type,total_prepaid_amount,total_prepaid_amount,actual_total
+    SELECT customer_name, telephone, date_created,time_out,expected_time_back,expected_period,deposit_type,total_prepaid_amount,total_deposit_amount,actual_total
     FROM rentals
     WHERE rental_id=?
     ORDER BY rental_id DESC LIMIT 1
     """, (id,))           
-
     rows = cursor.fetchone()
     conn.close()
     return rows
+
+def get_bikes_from_rental(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT bicycles.id,bicycles.registration_number,bicycles.bike_class,bicycles.make,bicycles.model,bicycles.status
+    FROM bicycles
+    JOIN rental_items ON bicycles.id = rental_items.bicycle_id
+    WHERE rental_items.rental_id=? 
+    """, (rental_id,))    
+    rows = cursor.fetchall()
+    connection.close()
+    return rows 
+
+def update_prepaid(rental_id,total):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE rentals
+    SET total_prepaid_amount = ? 
+    WHERE rental_id = ? 
+    """, (total,rental_id))    
+    connection.commit()
+    connection.close()
+
+def update_rental_status(bicycle_id,status):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE bicycles
+    SET status = ? 
+    WHERE id =?
+    """, (status,bicycle_id))    
+    connection.commit()
+    connection.close()
+
+def get_total_deposit(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT total_deposit_amount
+    FROM rentals
+    WHERE rental_id=?
+    """,(rental_id,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+
+def get_prepaid_amount(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT total_prepaid_amount 
+    FROM rentals 
+    WHERE rental_id=?
+    """,(rental_id,))
+    
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+def get_bike_status(bicycle_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT status 
+    FROM bicycles
+    WHERE id =?
+    """,(bicycle_id,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+def get_late_fee(bike_class):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT late_fee
+    FROM rental_rates
+    WHERE bike_class =?
+    """,(bike_class,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+def get_period(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT expected_period
+    FROM rentals 
+    WHERE rental_id=?
+    """,(rental_id,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+

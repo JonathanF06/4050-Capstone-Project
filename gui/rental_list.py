@@ -4,6 +4,11 @@ from database import list_all_rentals
 from styles import setup_styles
 from gui.reciept import ReceiptForm
 from database import get_rentaldata
+from database import get_bikes_from_rental
+from gui.returned_form import ReturnForm 
+
+
+
 class RentalList(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -43,11 +48,21 @@ class RentalList(tk.Toplevel):
         self.load_rentals()
         ttk.Button(self, text="View", width=50, command = self.get_copy).pack(pady=10)
         ttk.Button(self, text="Back", command=self.open_main_window).pack(pady=10)
+        ttk.Button(self, text="Returned", command=self.open_return_form).pack(pady=10)
         
 
     def open_main_window(self):
         self.destroy()
         self.parent.deiconify()
+
+    def open_return_form(self):
+        selected=self.tree.selection()
+        if selected:   
+            row = self.tree.item(selected[0])
+            values= row["values"]
+            rental_id=values[0]
+            ReturnForm(rental_id)        
+        self.destroy()
         
 
     def load_rentals(self):
@@ -63,7 +78,7 @@ class RentalList(tk.Toplevel):
         if selected:   
             row = self.tree.item(selected[0])
             values= row["values"]
-            print(values)
-            ReceiptForm(get_rentaldata(values[0]),self.rentals_id,self.selected,True)
+            ReceiptForm(get_rentaldata(values[0]),values[0],get_bikes_from_rental(values[0]),True)
+            
 
 

@@ -6,6 +6,7 @@ from database import add_rental_item
 from tkinter import messagebox
 from database import get_rental_prepaid
 from database import get_rental_total 
+from database import update_prepaid
 class ReceiptForm(tk.Toplevel):
     def __init__(self,data,rentals_id,selected,final):
         super().__init__()
@@ -148,7 +149,7 @@ class ReceiptForm(tk.Toplevel):
                     )
                     hasError = True
                 else:
-                    prepaid_amount.append(entry.get())
+                    prepaid_amount.append(int(entry.get()))
         
         if len(prepaid_amount) != len(self.selected):
             if not hasError:
@@ -156,6 +157,7 @@ class ReceiptForm(tk.Toplevel):
                     "Missing Fields",
                     "Please fill out a Prepaid amount.") 
         else:
+            update_prepaid(sum(prepaid_amount),self.rentals_id) 
             for i, bike in enumerate(self.selected):
                 bike_id=bike[0]
                 add_rental_item(prepaid_amount[i],self.rentals_id,bike_id)

@@ -127,9 +127,9 @@ class RentalForm(tk.Toplevel):
             rental_id=add_rental(rental_data)
             self.destroy()
             self.parent.deiconify()
-            
+            print(selected_bicycles)
             ReceiptForm(rental_data,rental_id,selected_bicycles,False)
-
+            
 
     def calculate_price(self,bicycles,period):
         total=0
