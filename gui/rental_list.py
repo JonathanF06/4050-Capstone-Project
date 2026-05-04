@@ -6,19 +6,20 @@ from gui.reciept import ReceiptForm
 from database import get_rentaldata
 from database import get_bikes_from_rental
 from gui.returned_form import ReturnForm 
-
-
+from database import get_rental_status
+from gui.final_receipt import FinalReceipt
 
 class RentalList(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         setup_styles(self)
-
         self.parent=parent
-        self.title("Open Rentals")
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        self.title("Jonathan's Bicycle Store | View Rentals")
         self.geometry("800x400")
 
-        ttk.Label(self, text="Open Rentals").pack(pady=10)
+        ttk.Label(self, text="List of Rentals").pack(pady=10)
 
         table_frame = ttk.Frame(self)
         table_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -46,9 +47,12 @@ class RentalList(tk.Toplevel):
 
     
         self.load_rentals()
-        ttk.Button(self, text="View", width=50, command = self.get_copy).pack(pady=10)
-        ttk.Button(self, text="Back", command=self.open_main_window).pack(pady=10)
-        ttk.Button(self, text="Returned", command=self.open_return_form).pack(pady=10)
+        button_frame = ttk.Frame(self)
+        button_frame.pack(pady=10)
+
+        ttk.Button(button_frame, text="View", width=20, command=self.get_copy).pack(side="left", padx=10)
+        ttk.Button(button_frame, text="Return", width=20, command=self.open_return_form).pack(side="left", padx=10)
+        ttk.Button(button_frame, text="Back", width=20, command=self.open_main_window, style="Exit.TButton").pack(side="left", padx=10)
         
 
     def open_main_window(self):
@@ -57,12 +61,14 @@ class RentalList(tk.Toplevel):
 
     def open_return_form(self):
         selected=self.tree.selection()
-        if selected:   
+        if selected:
             row = self.tree.item(selected[0])
             values= row["values"]
             rental_id=values[0]
-            ReturnForm(rental_id)        
-        self.destroy()
+            if get_rental_status(rental_id) == "Closed":
+                return   
+            ReturnForm(self,self.parent,rental_id)        
+            self.withdraw()
         
 
     def load_rentals(self):
@@ -70,15 +76,21 @@ class RentalList(tk.Toplevel):
 
         for row in self.tree.get_children():
             self.tree.delete(row)
-
         for bike in rows:
             self.tree.insert("", "end", values=bike)
+    
     def get_copy(self):
         selected=self.tree.selection()
         if selected:   
             row = self.tree.item(selected[0])
             values= row["values"]
-            ReceiptForm(get_rentaldata(values[0]),values[0],get_bikes_from_rental(values[0]),True)
+            if values[4] == "Closed":
+                FinalReceipt(values[0])
+            else:
+                ReceiptForm(get_rentaldata(values[0]),values[0],get_bikes_from_rental(values[0]),True)
             
+    def on_close(self):
+        self.destroy()
+        self.parent.deiconify()
 
 

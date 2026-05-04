@@ -10,9 +10,9 @@ class BicycleRentalApp(tk.Tk):
         setup_styles(self)
 
         self.title("Jonathan's Bicycle Store")
-        self.geometry("700x450")
+        self.geometry("600x350")
 
-        ttk.Label(self, text="Jonathan's Bicycle Store").pack(pady=15)
+        ttk.Label(self, text="Jonathan's Bicycle Store").pack(pady=10)
         ttk.Button(self, text="List Bicycles", width=50, command = self.get_available_bikes).pack(pady=10)
         ttk.Button(self, text="Create Rental", width=50, command = self.create_rental_form).pack(pady=10)
         ttk.Button(self, text="View Rentals", width=50, command = self.view_rentals).pack(pady=10)

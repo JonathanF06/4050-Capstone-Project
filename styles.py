@@ -6,7 +6,6 @@ def setup_styles(window):
     style.theme_use("clam")
 
     style.configure("TFrame", background="#f0f0f0")
-
     #Title Labels
     style.configure(
         "TLabel",
@@ -19,7 +18,12 @@ def setup_styles(window):
         font=("Arial", 12, "bold"),
         background="#f0f0f0"
     )
-
+    style.configure(
+        "TRadiobutton",
+        font=("Arial", 12),
+        background="#f0f0f0",
+        padding=10
+    )
     #Regular Buttons
     style.configure(
         "TButton",

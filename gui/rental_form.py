@@ -15,6 +15,7 @@ class RentalForm(tk.Toplevel):
         setup_styles(self)
 
         self.parent=parent
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.title("Create Rental")
         self.geometry("620x550")
 
@@ -127,7 +128,6 @@ class RentalForm(tk.Toplevel):
             rental_id=add_rental(rental_data)
             self.destroy()
             self.parent.deiconify()
-            print(selected_bicycles)
             ReceiptForm(rental_data,rental_id,selected_bicycles,False)
             
 
@@ -143,6 +143,10 @@ class RentalForm(tk.Toplevel):
         return total
     
     def main_menu(self):
+        self.destroy()
+        self.parent.deiconify()
+
+    def on_close(self):
         self.destroy()
         self.parent.deiconify()
 

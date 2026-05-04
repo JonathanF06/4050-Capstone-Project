@@ -52,11 +52,13 @@ def initialize_database():
                     total_deposit_amount REAL NOT NULL,
                     time_returned TEXT,
                     actual_total REAL,
-                    extra_charge REAL,
+                    late_fee REAL NOT NULL DEFAULT 0,
+                    lost_fee REAL NOT NULL DEFAULT 0,
                     deposit_released INTEGER DEFAULT 0,
                     rental_status TEXT NOT NULL DEFAULT 'Open',
                     incident_notes TEXT
                 ); 
+
                 CREATE TABLE IF NOT EXISTS rental_items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     prepaid_amount REAL,
@@ -204,10 +206,29 @@ def list_all_rentals():
     cursor.execute("""
     SELECT rental_id, customer_name, telephone, date_created, rental_status
     FROM rentals
+    ORDER BY 
+    CASE 
+        WHEN rental_status = 'Open' THEN 0
+        WHEN rental_status = 'Closed' THEN 1
+        ELSE 2
+    END
     """)
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def get_rental_status(rental_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT rental_status 
+    FROM rentals
+    WHERE rental_id = ?
+    """, (rental_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else 0 
+
 
 def get_rental_prepaid(rental_id,bicycle_id):
     conn = get_connection()
@@ -270,7 +291,7 @@ def update_prepaid(rental_id,total):
     connection.commit()
     connection.close()
 
-def update_rental_status(bicycle_id,status):
+def update_bike_status(bicycle_id,status):
     connection = get_connection()
     cursor= connection.cursor()
     cursor.execute("""
@@ -280,6 +301,18 @@ def update_rental_status(bicycle_id,status):
     """, (status,bicycle_id))    
     connection.commit()
     connection.close()
+
+def update_rental_status(rental_id,status):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE rentals
+    SET rental_status = ? 
+    WHERE rental_id =?
+    """, (status,rental_id))    
+    connection.commit()
+    connection.close()
+
 
 def get_total_deposit(rental_id):
     connection = get_connection()
@@ -299,10 +332,9 @@ def get_prepaid_amount(rental_id):
     cursor= connection.cursor()
     cursor.execute("""
     SELECT total_prepaid_amount 
-    FROM rentals 
+    FROM rentals
     WHERE rental_id=?
     """,(rental_id,))
-    
     row = cursor.fetchone()
     connection.close()
     return row[0] if row else 0
@@ -343,3 +375,69 @@ def get_period(rental_id):
     connection.close()
     return row[0] if row else 0
 
+def delete_rental(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    DELETE FROM rentals 
+    WHERE rental_id =?
+    """, (rental_id,))    
+    connection.commit()
+    connection.close()
+
+def update_late_fee(rental_id, amount):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE rentals
+    SET late_fee = ? 
+    WHERE rental_id =?
+    """, (amount, rental_id))    
+    connection.commit()
+    connection.close()
+
+def update_lost_fee(rental_id, amount):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE rentals
+    SET lost_fee = ? 
+    WHERE rental_id =?
+    """, (amount, rental_id))    
+    connection.commit()
+    connection.close()
+
+def get_rental_late_fee(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT late_fee
+    FROM rentals
+    WHERE rental_id = ?
+    """,(rental_id,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+def get_rental_lost_fee(rental_id):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    SELECT lost_fee
+    FROM rentals 
+    WHERE rental_id=?
+    """,(rental_id,))
+    row = cursor.fetchone()
+    connection.close()
+    return row[0] if row else 0
+
+def update_rental_return(rental_id, time_back):
+    connection = get_connection()
+    cursor= connection.cursor()
+    cursor.execute("""
+    UPDATE rentals
+    SET time_returned = ? 
+    WHERE rental_id = ?
+    """, (time_back,rental_id))
+    connection.commit()
+    connection.close()
