@@ -7,6 +7,9 @@
 *.o
 *.so
 *.pyc
+*.toc
+*.pyz
+
 
 # Packages #
 ############
@@ -37,3 +40,9 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Build paths #
+###############
+build/
+dist/
+*.spec

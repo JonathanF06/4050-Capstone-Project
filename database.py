@@ -18,10 +18,6 @@ def initialize_database():
                     bike_class TEXT NOT NULL,
                     make TEXT NOT NULL,
                     model TEXT NOT NULL,
-                    frame_size TEXT NOT NULL,
-                    frame_number TEXT NOT NULL,
-                    date_of_purchase TEXT NOT NULL,
-                    purchase_price REAL NOT NULL,
                     status TEXT NOT NULL DEFAULT 'Available',
                     selling_date TEXT,
                     selling_price REAL
@@ -78,11 +74,11 @@ def initialize_database():
 # creating sample data and pushing into database
 def seed_sample_data(): 
     bikes = [
-        ("MB001", "MB", "Trek", "Marlin 7", "M", "FRM001", "2025-05-01", 800.0),
-        ("MB002", "MB", "Giant", "Talon 2", "L", "FRM002", "2025-06-15", 760.0),
-        ("MB003", "MB", "Scott", "Aspect 960", "M", "FRM003", "2024-08-20", 780.0),
-        ("AT001", "AT", "Specialized", "Sirrus X", "M", "FRM004", "2025-03-10", 700.0),
-        ("AT002", "AT", "Cannondale", "Quick CX", "S", "FRM005", "2024-09-05", 690.0)
+        ("MB001", "MB", "Trek", "Marlin 7"),
+        ("MB002", "MB", "Giant", "Talon 2"),
+        ("MB003", "MB", "Scott", "Aspect 960"),
+        ("AT001", "AT", "Specialized", "Sirrus X"),
+        ("AT002", "AT", "Cannondale", "Quick CX")
     ]
     rates = [
         ("MB", "Day", 18.0, "2026-01-01", None,6),
@@ -115,9 +111,8 @@ def add_bicycles(data):
     cursor.executemany(
         """
         INSERT OR IGNORE INTO bicycles (
-            registration_number, bike_class, make, model, frame_size,
-            frame_number, date_of_purchase, purchase_price
-        ) VALUES (?, ?, ?, ?, ?, ?, ?,?)
+            registration_number, bike_class, make, model
+        ) VALUES (?, ?, ?, ?)
         """,
         data
     )
