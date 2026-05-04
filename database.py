@@ -18,10 +18,7 @@ def initialize_database():
                     bike_class TEXT NOT NULL,
                     make TEXT NOT NULL,
                     model TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'Available',
-                    selling_date TEXT,
-                    selling_price REAL
-                    
+                    status TEXT NOT NULL DEFAULT 'Available'
                 );
 
                 CREATE TABLE IF NOT EXISTS rental_rates (
@@ -62,7 +59,6 @@ def initialize_database():
                     bicycle_id INTEGER NOT NULL,
                     FOREIGN KEY (rental_id) REFERENCES rentals(rental_id),
                     FOREIGN KEY (bicycle_id) REFERENCES bicycles(id)
-
                 );
 
               
