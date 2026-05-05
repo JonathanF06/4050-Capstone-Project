@@ -43,7 +43,7 @@ class ReceiptForm(tk.Toplevel):
         # top left UI
         company = tk.LabelFrame(
             main,
-            text="Jonathan's Bicycles",
+            text="High Peak",
             font=("Arial", 20, "bold"),
             padx=10,
             pady=8

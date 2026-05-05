@@ -11,7 +11,7 @@ class BicycleListForm(tk.Toplevel):
 
         self.parent=parent
         self.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.title("Jonathan's Bicycle Store | List Bicycles")
+        self.title("High Peak | List Bicycles")
         self.geometry("800x400")
 
         ttk.Label(self, text="List of Bicycles", font=("Arial", 14, "bold")).pack(pady=10)

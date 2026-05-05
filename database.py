@@ -77,10 +77,12 @@ def seed_sample_data():
         ("AT002", "AT", "Cannondale", "Quick CX")
     ]
     rates = [
-        ("MB", "Day", 18.0, "2026-01-01", None,6),
-        ("MB", "Half-Day", 10.0, "2026-01-01", None,6),
-        ("AT", "Day", 20.0, "2026-01-01", None,8),
-        ("AT", "Half-Day", 12.0, "2026-01-01", None,8)
+        ("MB", "Day", 18.0, "2026-01-01", None,5),
+        ("MB", "Half-Day", 10.0, "2026-01-01", None,5),
+        ("AT", "Day", 20.0, "2026-01-01", None,5),
+        ("AT", "Half-Day", 12.0, "2026-01-01", None,5),
+        ("MB", "Late Rental", 8.0, "2026-01-01", None,5),
+        ("AT", "Late Rental", 6.0, "2026-01-01", None,5)
         ]
     add_bicycles(bikes)
     add_rates(rates)

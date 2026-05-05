@@ -16,7 +16,7 @@ class RentalList(tk.Toplevel):
         self.parent=parent
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        self.title("Jonathan's Bicycle Store | View Rentals")
+        self.title("High Peak | View Rentals")
         self.geometry("800x400")
 
         ttk.Label(self, text="List of Rentals").pack(pady=10)
